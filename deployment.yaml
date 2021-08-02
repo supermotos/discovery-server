@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discovery-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: discovery-service
+  template:
+    metadata:
+      labels:
+        app: discovery-service
+    spec:
+      containers:
+        - image: fotopiece/discovery-server
+          imagePullPolicy: Always
+          name: discovery-service
+          ports:
+            - containerPort: 8761
+              protocol: TCP
+              name: port1
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1664Mi
+            requests:
+              cpu: 100m
+              memory: 1024Mi
+      hostNetwork: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+  labels:
+    app: discovery-service
+spec:
+  ports:
+    - port: 8761
+      targetPort: 8761
+  selector:
+    app: discovery-service
+  type: ClusterIP
